@@ -1,0 +1,763 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Image Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar h1 {
+            color: #667eea;
+            font-size: 1.8em;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .view-section {
+            display: none;
+        }
+        
+        .view-section.active {
+            display: block;
+        }
+        
+        /* Albums View */
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+        
+        .album-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .album-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+        
+        .album-cover {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+        }
+        
+        .album-info {
+            padding: 20px;
+        }
+        
+        .album-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .album-desc {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .album-meta {
+            font-size: 0.85em;
+            color: #999;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        .album-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .album-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.3s;
+        }
+        
+        .btn-open {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-open:hover {
+            background: #5568d3;
+        }
+        
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #ee5a52;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 1em;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Gallery View */
+        .gallery-header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .back-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        .back-btn:hover {
+            background: #5568d3;
+        }
+        
+        .upload-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f8fbff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #f0f8ff;
+            transform: scale(1.02);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .image-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .image-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-info {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .image-filename {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 8px;
+        }
+        
+        .image-caption {
+            color: #666;
+            font-size: 0.85em;
+            line-height: 1.4;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .image-delete {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.85em;
+        }
+        
+        .image-delete:hover {
+            background: #ee5a52;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state-text {
+            font-size: 1.2em;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        
+        .btn-success {
+            background: #51cf66;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #40c057;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🖼️ Personal Image Gallery</h1>
+        <div class="nav-buttons">
+            <button class="btn btn-success" id="newAlbumBtn">+ New Album</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Albums View -->
+        <div id="albumsView" class="view-section active">
+            <div id="albumsGrid" class="albums-grid"></div>
+            <div id="emptyAlbums" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📁</div>
+                <div class="empty-state-text">No albums yet. Create your first album!</div>
+            </div>
+        </div>
+        
+        <!-- Gallery View -->
+        <div id="galleryView" class="view-section">
+            <div class="gallery-header">
+                <button class="back-btn" id="backBtn">← Back to Albums</button>
+                <h2 id="albumTitle"></h2>
+                <div></div>
+            </div>
+            
+            <div class="upload-section">
+                <div class="message" id="uploadMessage"></div>
+                <div class="upload-area" id="uploadArea">
+                    <div>📸</div>
+                    <div style="margin-top: 10px;">Drop images here or click to select</div>
+                    <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
+                    <button type="button" class="btn btn-primary" style="margin-top: 10px;" onclick="document.getElementById('fileInput').click()">
+                        Choose Images
+                    </button>
+                </div>
+            </div>
+            
+            <div class="loading" id="uploadLoading">
+                <div class="spinner"></div>
+                <p>Uploading and generating captions...</p>
+            </div>
+            
+            <div id="imagesGrid" class="images-grid"></div>
+            <div id="emptyGallery" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📷</div>
+                <div class="empty-state-text">No images in this album yet. Upload some!</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- New Album Modal -->
+    <div id="newAlbumModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Create New Album</div>
+            <form id="newAlbumForm">
+                <div class="form-group">
+                    <label>Album Name *</label>
+                    <input type="text" id="albumName" placeholder="e.g., Vacation 2025" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="albumDesc" placeholder="Add a description (optional)"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Create Album</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let currentAlbumId = null;
+        
+        // Toggle between views
+        function showAlbumsView() {
+            document.getElementById('albumsView').classList.add('active');
+            document.getElementById('galleryView').classList.remove('active');
+            loadAlbums();
+        }
+        
+        function showGalleryView(albumId) {
+            currentAlbumId = albumId;
+            document.getElementById('albumsView').classList.remove('active');
+            document.getElementById('galleryView').classList.add('active');
+            loadAlbumImages(albumId);
+        }
+        
+        // Initialize
+        function init() {
+            loadAlbums();
+            setupEventListeners();
+        }
+        
+        function setupEventListeners() {
+            document.getElementById('newAlbumBtn').addEventListener('click', () => {
+                document.getElementById('newAlbumModal').classList.add('active');
+            });
+            
+            document.getElementById('backBtn').addEventListener('click', showAlbumsView);
+            
+            document.getElementById('newAlbumForm').addEventListener('submit', createAlbum);
+            
+            // Upload area
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    uploadFiles(files);
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    uploadFiles(e.target.files);
+                }
+            });
+        }
+        
+        function closeModal() {
+            document.getElementById('newAlbumModal').classList.remove('active');
+            document.getElementById('newAlbumForm').reset();
+        }
+        
+        function createAlbum(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('albumName').value;
+            const description = document.getElementById('albumDesc').value;
+            
+            fetch('/api/albums', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, description })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.id) {
+                    closeModal();
+                    loadAlbums();
+                    showMessage('Album created successfully!', 'success');
+                } else {
+                    showMessage(data.error || 'Failed to create album', 'error');
+                }
+            })
+            .catch(err => showMessage('Error creating album', 'error'));
+        }
+        
+        function loadAlbums() {
+            fetch('/api/albums')
+                .then(r => r.json())
+                .then(data => {
+                    const grid = document.getElementById('albumsGrid');
+                    const empty = document.getElementById('emptyAlbums');
+                    
+                    if (data.albums.length === 0) {
+                        grid.innerHTML = '';
+                        empty.style.display = 'block';
+                    } else {
+                        empty.style.display = 'none';
+                        grid.innerHTML = data.albums.map(album => `
+                            <div class="album-card">
+                                <div class="album-cover">📁</div>
+                                <div class="album-info">
+                                    <div class="album-name">${album.name}</div>
+                                    <div class="album-desc">${album.description || 'No description'}</div>
+                                    <div class="album-meta">${album.image_count} images</div>
+                                    <div class="album-actions">
+                                        <button class="album-actions button btn-open" onclick="showGalleryView(${album.id})">Open</button>
+                                        <button class="btn-delete" onclick="deleteAlbum(${album.id})">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(err => showMessage('Error loading albums', 'error'));
+        }
+        
+        function deleteAlbum(albumId) {
+            if (!confirm('Delete this album and all its images?')) return;
+            
+            fetch(`/api/albums/${albumId}`, { method: 'DELETE' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        loadAlbums();
+                        showMessage('Album deleted', 'success');
+                    } else {
+                        showMessage(data.error || 'Failed to delete', 'error');
+                    }
+                })
+                .catch(err => showMessage('Error deleting album', 'error'));
+        }
+        
+        function loadAlbumImages(albumId) {
+            document.getElementById('albumTitle').textContent = '';
+            
+            fetch(`/api/albums/${albumId}/images`)
+                .then(r => r.json())
+                .then(data => {
+                    const grid = document.getElementById('imagesGrid');
+                    const empty = document.getElementById('emptyGallery');
+                    
+                    if (data.images.length === 0) {
+                        grid.innerHTML = '';
+                        empty.style.display = 'block';
+                    } else {
+                        empty.style.display = 'none';
+                        grid.innerHTML = data.images.map(img => `
+                            <div class="image-card">
+                                <div class="image-container">
+                                    <img src="" alt="Loading..." data-image-id="${img.id}">
+                                </div>
+                                <div class="image-info">
+                                    <div class="image-filename">${img.original_filename}</div>
+                                    <div class="image-caption">${img.caption || 'Generating caption...'}</div>
+                                    <button class="image-delete" onclick="deleteImage(${img.id})">Delete</button>
+                                </div>
+                            </div>
+                        `).join('');
+                        
+                        // Load images
+                        data.images.forEach(img => {
+                            fetch(`/api/images/${img.id}/thumbnail`)
+                                .then(r => r.json())
+                                .then(d => {
+                                    const img_el = document.querySelector(`[data-image-id="${img.id}"]`);
+                                    if (img_el) img_el.src = d.image;
+                                });
+                        });
+                    }
+                })
+                .catch(err => showMessage('Error loading images', 'error'));
+        }
+        
+        function uploadFiles(files) {
+            if (!currentAlbumId) return;
+            
+            const formData = new FormData();
+            for (let file of files) {
+                formData.append('files', file);
+            }
+            
+            document.getElementById('uploadLoading').style.display = 'block';
+            
+            fetch(`/api/albums/${currentAlbumId}/upload`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('uploadLoading').style.display = 'none';
+                if (data.success) {
+                    loadAlbumImages(currentAlbumId);
+                    document.getElementById('fileInput').value = '';
+                    showMessage('Images uploaded successfully!', 'success');
+                } else {
+                    showMessage(data.error || 'Upload failed', 'error');
+                }
+            })
+            .catch(err => {
+                document.getElementById('uploadLoading').style.display = 'none';
+                showMessage('Error uploading images', 'error');
+            });
+        }
+        
+        function deleteImage(imageId) {
+            if (!confirm('Delete this image?')) return;
+            
+            fetch(`/api/images/${imageId}/delete`, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        loadAlbumImages(currentAlbumId);
+                        showMessage('Image deleted', 'success');
+                    } else {
+                        showMessage(data.error || 'Failed to delete', 'error');
+                    }
+                })
+                .catch(err => showMessage('Error deleting image', 'error'));
+        }
+        
+        function showMessage(text, type) {
+            const msg = document.getElementById('uploadMessage');
+            msg.textContent = text;
+            msg.className = `message ${type} show`;
+            setTimeout(() => msg.classList.remove('show'), 4000);
+        }
+        
+        // Start
+        init();
+    </script>
+</body>
+</html>
