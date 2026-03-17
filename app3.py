@@ -516,7 +516,7 @@ gallery_template = '''
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #C1DBE8;
             min-height: 100vh;
             padding: 20px;
         }
@@ -533,7 +533,7 @@ gallery_template = '''
         }
         
         .navbar h1 {
-            color: #667eea;
+            color: #43302E;
             font-size: 1.8em;
         }
         
@@ -579,12 +579,13 @@ gallery_template = '''
         
         .album-cover {
             height: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #43302E;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 3em;
+            color: #FFF1B5;
+            font-size: 2.5em;
+            font-weight: 300;
         }
         
         .album-info {
@@ -632,12 +633,12 @@ gallery_template = '''
         }
         
         .btn-open {
-            background: #667eea;
-            color: white;
+            background: #C1DBE8;
+            color: #43302E;
         }
         
         .btn-open:hover {
-            background: #5568d3;
+            background: #A8C5D6;
         }
         
         .btn-delete {
@@ -718,8 +719,8 @@ gallery_template = '''
         .btn-primary {
             flex: 1;
             padding: 12px;
-            background: #667eea;
-            color: white;
+            background: #43302E;
+            color: #FFF1B5;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -728,7 +729,7 @@ gallery_template = '''
         }
         
         .btn-primary:hover {
-            background: #5568d3;
+            background: #2D1F1A;
         }
         
         .btn-secondary {
@@ -760,8 +761,8 @@ gallery_template = '''
         
         .back-btn {
             padding: 10px 20px;
-            background: #667eea;
-            color: white;
+            background: #43302E;
+            color: #FFF1B5;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -769,7 +770,7 @@ gallery_template = '''
         }
         
         .back-btn:hover {
-            background: #5568d3;
+            background: #2D1F1A;
         }
         
         .upload-section {
@@ -789,13 +790,13 @@ gallery_template = '''
         }
         
         .upload-area:hover {
-            border-color: #667eea;
-            background: #f8fbff;
+            border-color: #C1DBE8;
+            background: #F5FAFC;
         }
         
         .upload-area.dragover {
-            border-color: #667eea;
-            background: #f0f8ff;
+            border-color: #43302E;
+            background: #F2F8FB;
             transform: scale(1.02);
         }
         
@@ -900,12 +901,12 @@ gallery_template = '''
         }
         
         .btn-success {
-            background: #51cf66;
-            color: white;
+            background: #FFF1B5;
+            color: #43302E;
         }
         
         .btn-success:hover {
-            background: #40c057;
+            background: #FFE896;
         }
         
         .loading {
@@ -917,7 +918,7 @@ gallery_template = '''
         
         .spinner {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border-top: 3px solid #43302E;
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -956,9 +957,9 @@ gallery_template = '''
 </head>
 <body>
     <div class="navbar">
-        <h1>🖼️ Personal Image Gallery</h1>
+        <h1>Personal Image Gallery</h1>
         <div class="nav-buttons">
-            <button class="btn btn-success" id="newAlbumBtn">+ New Album</button>
+            <button class="btn btn-success" id="newAlbumBtn">New Album</button>
         </div>
     </div>
     
@@ -967,7 +968,7 @@ gallery_template = '''
         <div id="albumsView" class="view-section active">
             <div id="albumsGrid" class="albums-grid"></div>
             <div id="emptyAlbums" class="empty-state" style="display: none;">
-                <div class="empty-state-icon">📁</div>
+                <div class="empty-state-icon">[ ]</div>
                 <div class="empty-state-text">No albums yet. Create your first album!</div>
             </div>
         </div>
@@ -983,7 +984,6 @@ gallery_template = '''
             <div class="upload-section">
                 <div class="message" id="uploadMessage"></div>
                 <div class="upload-area" id="uploadArea">
-                    <div>📸</div>
                     <div style="margin-top: 10px;">Drop images here or click to select</div>
                     <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
                     <button type="button" class="btn btn-primary" style="margin-top: 10px;" onclick="document.getElementById('fileInput').click()">
@@ -999,7 +999,7 @@ gallery_template = '''
             
             <div id="imagesGrid" class="images-grid"></div>
             <div id="emptyGallery" class="empty-state" style="display: none;">
-                <div class="empty-state-icon">📷</div>
+                <div class="empty-state-icon">[ ]</div>
                 <div class="empty-state-text">No images in this album yet. Upload some!</div>
             </div>
         </div>
@@ -1130,7 +1130,7 @@ gallery_template = '''
                         empty.style.display = 'none';
                         grid.innerHTML = data.albums.map(album => `
                             <div class="album-card">
-                                <div class="album-cover">📁</div>
+                                <div class="album-cover">Album</div>
                                 <div class="album-info">
                                     <div class="album-name">${album.name}</div>
                                     <div class="album-desc">${album.description || 'No description'}</div>
